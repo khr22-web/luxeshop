@@ -1,6 +1,8 @@
 "use client";
+import Link from "next/link";
 import { useState, useEffect, useCallback } from "react";
 import { Heart, Star, ShoppingCart, TrendingUp, RefreshCw, ExternalLink, Zap } from "lucide-react";
+import { useCart } from "@/context/CartContext";
 
 const DEMO = [
   { id:"1", title:"TWS Wireless Earbuds Bluetooth 5.3 Noise Cancelling", img:"https://images.unsplash.com/photo-1590658268037-6bf12165a8df?w=400&h=400&fit=crop", ali:24.99, our:29.99, list:59.99, profit:5.00, rating:4.8, sold:18420, badge:"Best Seller", badgeColor:"bg-violet-500" },
@@ -13,9 +15,19 @@ const DEMO = [
 
 function Card({ p }: { p: typeof DEMO[0] }) {
   const [liked, setLiked] = useState(false);
+  const [added, setAdded] = useState(false);
+  const { addItem } = useCart();
   const disc = Math.round(((p.list - p.our) / p.list) * 100);
+
+  const handleAdd = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addItem({ id: p.id, title: p.title, price: p.our, originalPrice: p.ali, image: p.img, source: "aliexpress" });
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
+  };
+
   return (
-    <div className="group relative flex flex-col rounded-2xl border border-white/[0.07] bg-[#111220] overflow-hidden hover:border-[#7c6fff]/40 hover:shadow-[0_8px_40px_rgba(124,111,255,0.12)] transition-all duration-300 hover:-translate-y-1">
+    <Link href={`/product/${p.id}`} className="group relative flex flex-col rounded-2xl border border-white/[0.07] bg-[#111220] overflow-hidden hover:border-[#7c6fff]/40 hover:shadow-[0_8px_40px_rgba(124,111,255,0.12)] transition-all duration-300 hover:-translate-y-1">
       <div className="relative h-52 overflow-hidden bg-[#0d0e1a]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src={p.img} alt={p.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
@@ -45,15 +57,15 @@ function Card({ p }: { p: typeof DEMO[0] }) {
           </div>
         </div>
         <div className="flex gap-2 mt-auto">
-          <button className="flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl bg-gradient-to-r from-[#7c6fff] to-[#38bdf8] text-white text-xs font-bold hover:opacity-90 transition-all shadow-md">
-            <ShoppingCart className="w-3.5 h-3.5" />Add to Cart
+          <button onClick={handleAdd} className={`flex-1 flex items-center justify-center gap-1.5 py-2.5 rounded-xl text-white text-xs font-bold hover:opacity-90 transition-all shadow-md ${added ? "bg-emerald-500" : "bg-gradient-to-r from-[#7c6fff] to-[#38bdf8]"}`}>
+            <ShoppingCart className="w-3.5 h-3.5" />{added ? "Added!" : "Add to Cart"}
           </button>
           <a href="#" className="w-10 h-10 rounded-xl border border-white/[0.08] flex items-center justify-center hover:border-[#7c6fff]/40 hover:bg-[#7c6fff]/10 transition-all flex-shrink-0">
             <ExternalLink className="w-4 h-4 text-[#8888aa]" />
           </a>
         </div>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -95,7 +107,7 @@ export default function FeaturedProducts() {
             <button onClick={fetchProducts} disabled={loading} className="flex items-center gap-2 px-4 py-2 rounded-full border border-white/[0.08] text-[#8888aa] text-xs hover:text-white hover:border-white/20 transition-all disabled:opacity-50">
               <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />Refresh
             </button>
-            <button className="px-6 py-2.5 rounded-full border border-[#7c6fff]/30 text-[#a78bfa] text-sm font-semibold hover:bg-[#7c6fff]/10 transition-all whitespace-nowrap">View All →</button>
+            <Link href="/search" className="px-6 py-2.5 rounded-full border border-[#7c6fff]/30 text-[#a78bfa] text-sm font-semibold hover:bg-[#7c6fff]/10 transition-all whitespace-nowrap">View All →</Link>
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">

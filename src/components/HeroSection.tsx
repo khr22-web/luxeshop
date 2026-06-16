@@ -1,5 +1,6 @@
 "use client";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { Search, Sparkles, TrendingUp, Shield, Truck } from "lucide-react";
 
 const trending = ["Wireless Earbuds","Smart Watch","Gaming Chair","LED Strip","Laptop Stand"];
@@ -13,6 +14,13 @@ const stats = [
 export default function HeroSection() {
   const [query, setQuery] = useState("");
   const [source, setSource] = useState("all");
+  const router = useRouter();
+
+  const handleSearch = (q: string) => {
+    const term = q || query;
+    if (term.trim()) router.push(`/search?q=${encodeURIComponent(term.trim())}`);
+    else router.push("/search");
+  };
 
   return (
     <section className="relative flex flex-col items-center justify-center pt-24 pb-12 px-4 overflow-hidden" style={{background:"radial-gradient(ellipse 90% 60% at 50% 0%,rgba(124,111,255,0.18) 0%,transparent 65%),radial-gradient(ellipse 50% 40% at 85% 90%,rgba(56,189,248,0.1) 0%,transparent 55%),#07080f"}}>
@@ -40,7 +48,7 @@ export default function HeroSection() {
         </p>
 
         {/* ── Search Bar (mobile-first) ── */}
-        <div className="w-full max-w-2xl mx-auto mb-5">
+        <form onSubmit={(e) => { e.preventDefault(); handleSearch(""); }} className="w-full max-w-2xl mx-auto mb-5">
           <div className="flex items-center w-full rounded-2xl bg-[rgba(255,255,255,0.05)] border border-white/10 focus-within:border-[#7c6fff]/60 focus-within:shadow-[0_0_0_3px_rgba(124,111,255,0.12)] transition-all duration-300 overflow-hidden">
             {/* Source selector */}
             <select
@@ -65,13 +73,14 @@ export default function HeroSection() {
             </div>
             {/* Search button inside bar */}
             <button
+              type="submit"
               className="shrink-0 px-4 sm:px-6 py-4 text-white text-sm font-semibold transition-opacity hover:opacity-90 active:scale-95"
               style={{background:"linear-gradient(135deg,#7c6fff,#38bdf8)"}}
             >
               Search
             </button>
           </div>
-        </div>
+        </form>
 
         {/* Trending */}
         <div className="flex flex-wrap items-center justify-center gap-2 mb-10">
@@ -79,7 +88,7 @@ export default function HeroSection() {
           {trending.map((t) => (
             <button
               key={t}
-              onClick={() => setQuery(t)}
+              onClick={() => handleSearch(t)}
               className="px-3 py-1 rounded-full text-xs text-[#8888aa] bg-white/[0.04] border border-white/[0.07] hover:text-white hover:border-[#7c6fff]/40 hover:bg-[#7c6fff]/10 transition-all duration-200"
             >
               {t}
